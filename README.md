@@ -15,6 +15,33 @@ A futtatáshoz szükséges Kubernetes manifest file-ok nem az eredeti, hanem ebb
 ## Környezet
 A gyakorlathoz Azure környezetet fogunk használni és 4 fős csoportokban dolgozunk. Minden csoport kap 1-1 AKS cluster-t, amit használhat a futtatáshoz. A gyakorlat során minden résztvevő belép a saját cluster-ére és elindítja a részére kiadott microservice-eket. Ha minden container fut, akkor megnyitjuk a frontend által adott weboldalt és leellenőrizzük az eredményt.
 
+### Környezet létrehozása (CSAK OKTATÓKNAK)
+Az alábbi bash script létrehozza a resource group-okat és a cluster-eket az órához.
+```bash
+Clusters=(AKS-Alfa AKS-Bravo AKS-Charlie AKS-Delta AKS-Echo AKS-Foxtrot)
+Location="westeurope"
+
+for cluster in ${Clusters[@]}; do
+  echo "Creating resource group: $cluster"
+  az group create --name $cluster --location $Location
+
+  echo "Creating cluster: $cluster"
+  az aks create \
+    --name $cluster \
+    --resource-group $cluster \
+    --auto-upgrade-channel "none" \
+    --enable-cluster-autoscaler \
+    --min-count 1 \
+    --max-count 3 \
+    --node-count 1 \
+    --node-os-upgrade-channel "none" \
+    --node-vm-size "Standard_B2s" \
+    --network-plugin kubenet \
+    --no-ssh-key \
+    --no-wait
+done
+```
+
 # Feladatok
 ## Cluster és microservice szétosztás
 
